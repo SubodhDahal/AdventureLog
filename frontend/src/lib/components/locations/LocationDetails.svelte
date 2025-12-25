@@ -315,8 +315,16 @@
 		if (location.longitude !== null && typeof location.longitude === 'number') {
 			location.longitude = parseFloat(location.longitude.toFixed(6));
 		}
+
+		let payload = { ...location };
+
+		// Handle collections: only include if explicitly set via collection context
 		if (collection && collection.id) {
-			location.collections = [collection.id];
+			payload.collections = [collection.id];
+		} else if (locationToEdit && locationToEdit.id) {
+			// When editing without collection context, exclude collections from payload
+			// to prevent overwriting existing collections
+			delete payload.collections;
 		}
 
 		// Build payload and avoid sending an empty `collections` array when editing
